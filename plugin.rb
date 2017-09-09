@@ -13,30 +13,41 @@ module ::OpencollectivePlugin
   BADGE_NAME ||= 'OpenCollective Donator'.freeze
 
   def self.get_data!
-    token='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6ImxvZ2luIiwiaWQiOjM5MzksImVtYWlsIjoiYXBpK3Rlc3R1c2VyQG9wZW5jb2xsZWN0aXZlLmNvbSIsImlhdCI6MTUwNDYxMDg5MCwiZXhwIjoxNTA3MjAyODkwLCJpc3MiOiJodHRwczovL2FwaS5vcGVuY29sbGVjdGl2ZS5jb20iLCJzdWIiOjM5Mzl9.Bm4VaPJhcq2TBI8uZnWIfbH7-c3Iz6MroleDU5PhdwQ'
+    token=SiteSetting.opencollective_access_token
+    collective=SiteSetting.opencollective_collective_name
+
+    if token=="" or collective==""
+      puts "Fetching users from opencollective failed!"
+      puts "Please configure settings.yml for the opencollective plugin"
+      ::PluginStore.set('discourse-opencollective-plugin','user_data', nil)
+      return
+    end
     conn = Faraday.new(url: 'https://opencollective.com',
                        headers: { 'Authorization' => "Bearer #{token}" })
 
-    response = conn.get '/api/groups/testcollective/users'
+    response = conn.get "/api/groups/#{collective}/users"
     data = JSON.parse response.body
     # save the acquired json into plugin store
     ::PluginStore.set('discourse-opencollective-plugin','user_data', data)
   end
 
   def self.badges_grant!
+    retrieve=::PluginStore.get('discourse-opencollective-plugin','user_data')
+    if retrieve==nil
+      puts "Granting badges for OpenCollective users failed!"
+      return
+    end
     unless badge = Badge.find_by(name: BADGE_NAME)
       badge = Badge.create!(name: BADGE_NAME,
                            description: 'For the contributions made on OpenCollective ',
                            badge_type_id: 1)
     end
-    retrieve=::PluginStore.get('discourse-opencollective-plugin','user_data')
+
     # Iterates through users
     retrieve.each do |user|
       email=user['email']
       dUser=User.find_by_email(email)
-      if dUser==nil
-        puts "User doesn't exist"
-      else
+      if dUser!=nil
         puts dUser.inspect
         BadgeGranter.grant(badge, dUser)
       end
