@@ -1,0 +1,5 @@
+plugins:
+  opencollective_collective_name: 'testcollective'
+#  opencollective_collective_name: ''
+  opencollective_access_token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzY29wZSI6ImxvZ2luIiwiaWQiOjM5MzksImVtYWlsIjoiYXBpK3Rlc3R1c2VyQG9wZW5jb2xsZWN0aXZlLmNvbSIsImlhdCI6MTUwNDYxMDg5MCwiZXhwIjoxNTA3MjAyODkwLCJpc3MiOiJodHRwczovL2FwaS5vcGVuY29sbGVjdGl2ZS5jb20iLCJzdWIiOjM5Mzl9.Bm4VaPJhcq2TBI8uZnWIfbH7-c3Iz6MroleDU5PhdwQ'
+#  opencollective_access_token: ''
