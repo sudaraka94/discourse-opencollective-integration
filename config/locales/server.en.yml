@@ -1,0 +1,5 @@
+en:
+  site_settings:
+    opencollective_enabled: "Enable opencollective plugin"
+    opencollective_collective_name: "Name of opencollective"
+    opencollective_access_token: "Access token for opencollective"
