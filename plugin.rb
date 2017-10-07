@@ -13,27 +13,22 @@ require 'json'
 module ::OpencollectivePlugin
   BADGE_NAME ||= 'OpenCollective Donator'.freeze
 
-  def self.get_data!
+  def self.badges_grant!
     token=SiteSetting.opencollective_access_token
     collective=SiteSetting.opencollective_collective_name
 
     if token=="" or collective==""
       puts "Fetching users from opencollective failed!"
       puts "Please configure settings.yml for the opencollective plugin"
-      ::PluginStore.set('discourse-opencollective-plugin','user_data', nil)
       return
     end
+
     conn = Faraday.new(url: 'https://opencollective.com',
                        headers: { 'Authorization' => "Bearer #{token}" })
 
     response = conn.get "/api/groups/#{collective}/users"
     data = JSON.parse response.body
-    # save the acquired json into plugin store
-    ::PluginStore.set('discourse-opencollective-plugin','user_data', data)
-  end
 
-  def self.badges_grant!
-    retrieve=::PluginStore.get('discourse-opencollective-plugin','user_data')
     if retrieve==nil
       puts "Granting badges for OpenCollective users failed!"
       return
@@ -58,16 +53,8 @@ end
 
 after_initialize do
   module ::OpencollectivePlugin
-    #this
-    class GetDataJob < ::Jobs::Scheduled
-      every 50.seconds
-
-      def execute(args)
-        OpencollectivePlugin.get_data!
-      end
-      end
     class GrantBadgeJob < ::Jobs::Scheduled
-      every 50.seconds
+      every 1.day
 
       def execute(args)
         OpencollectivePlugin.badges_grant!
