@@ -53,23 +53,46 @@ module ::OpencollectivePlugin
       end
     end
   end
+
+  def self.add_users_to_groups!
+    default_group = Group.new(
+        name: 'Open Collective Backer',
+        visibility_level: Group.visibility_levels[:public],
+        primary_group: true,
+        title: 'Open Collective Backer',
+        flair_url: 'https://opencollective.com/public/images/oc-logo-icon.svg',
+        bio_raw: 'Open Collective Backers are added to this user group',
+        full_name: 'Open Collective Backer'
+    )
+
+    default_group.save!
+    puts "saved"
+  end
 end
 
 after_initialize do
   module ::OpencollectivePlugin
     #this
-    class GetDataJob < ::Jobs::Scheduled
-      every 50.seconds
+    # class GetDataJob < ::Jobs::Scheduled
+    #   every 50.seconds
+    #
+    #   def execute(args)
+    #     OpencollectivePlugin.get_data!
+    #   end
+    #   end
+    # class GrantBadgeJob < ::Jobs::Scheduled
+    #   every 50.seconds
+    #
+    #   def execute(args)
+    #     OpencollectivePlugin.badges_grant!
+    #   end
+    # end
+
+    class UserGroupJob < ::Jobs::Scheduled
+      every 15.seconds
 
       def execute(args)
-        OpencollectivePlugin.get_data!
-      end
-      end
-    class GrantBadgeJob < ::Jobs::Scheduled
-      every 50.seconds
-
-      def execute(args)
-        OpencollectivePlugin.badges_grant!
+        OpencollectivePlugin.add_users_to_groups!
       end
     end
   end
