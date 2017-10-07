@@ -4,6 +4,7 @@
 # authors: Sudaraka Jayathilaka
 # url: https://github.com/sudaraka94/opencollective-plugin.git
 
+enabled_site_setting :opencollective_enabled
 
 require 'net/http'
 require 'uri'
