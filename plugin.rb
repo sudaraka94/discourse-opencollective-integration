@@ -19,17 +19,18 @@ module ::OpencollectivePlugin
 
     if token=="" or collective==""
       puts "Fetching users from opencollective failed!"
-      puts "Please configure settings.yml for the opencollective plugin"
+      puts "Please configure settings in your admin panel"
       return
     end
 
+    puts token.inspect
     conn = Faraday.new(url: 'https://opencollective.com',
                        headers: { 'Authorization' => "Bearer #{token}" })
 
     response = conn.get "/api/groups/#{collective}/users"
     data = JSON.parse response.body
 
-    if retrieve==nil
+    if data==nil
       puts "Granting badges for OpenCollective users failed!"
       return
     end
@@ -40,9 +41,10 @@ module ::OpencollectivePlugin
     end
 
     # Iterates through users
-    retrieve.each do |user|
+    data.each do |user|
       email=user['email']
       dUser=User.find_by_email(email)
+
       if dUser!=nil
         puts dUser.inspect
         BadgeGranter.grant(badge, dUser)
@@ -54,7 +56,7 @@ end
 after_initialize do
   module ::OpencollectivePlugin
     class GrantBadgeJob < ::Jobs::Scheduled
-      every 1.day
+      every 30.seconds
 
       def execute(args)
         OpencollectivePlugin.badges_grant!
