@@ -56,7 +56,7 @@ end
 after_initialize do
   module ::OpencollectivePlugin
     class GrantBadgeJob < ::Jobs::Scheduled
-      every 30.seconds
+      every 1.day
 
       def execute(args)
         OpencollectivePlugin.badges_grant!
