@@ -23,7 +23,6 @@ module ::OpencollectivePlugin
       return
     end
 
-    puts token.inspect
     conn = Faraday.new(url: 'https://opencollective.com',
                        headers: { 'Authorization' => "Bearer #{token}" })
 
@@ -46,7 +45,6 @@ module ::OpencollectivePlugin
       dUser=User.find_by_email(email)
 
       if dUser!=nil
-        puts dUser.inspect
         BadgeGranter.grant(badge, dUser)
       end
     end
