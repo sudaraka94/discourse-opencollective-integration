@@ -46,9 +46,35 @@ module ::OpencollectivePlugin
 
       if dUser!=nil
         BadgeGranter.grant(badge, dUser)
+        add_users_to_groups!(dUser)
       end
     end
   end
+
+  def self.add_users_to_groups!(user)
+     puts "run"
+     group_id=::PluginStore.get('discourse-opencollective-plugin','group_id')
+     if group_id==nil
+       default_group = Group.new(
+           name: 'Backer',
+           visibility_level: Group.visibility_levels[:public],
+           primary_group: true,
+           title: 'Open Collective Backer',
+           flair_url: 'https://opencollective.com/public/images/oc-logo-icon.svg',
+           bio_raw: 'Open Collective Backers are added to this user group',
+           full_name: 'Open Collective Backer'
+       )
+
+       default_group.save!
+       group_id=default_group.id.to_s
+       ::PluginStore.set('discourse-opencollective-plugin','group_id',group_id )
+     end
+
+     group = Group.find_by id: group_id.to_i
+     group.add user
+     puts "saved"
+  end
+
 end
 
 after_initialize do
