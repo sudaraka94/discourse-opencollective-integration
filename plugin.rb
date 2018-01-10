@@ -93,7 +93,7 @@ end
 after_initialize do
   module ::OpencollectivePlugin
     class GrantBadgeJob < ::Jobs::Scheduled
-      every 15.seconds
+      every 1.day
 
       def execute(args)
         OpencollectivePlugin.sync!
