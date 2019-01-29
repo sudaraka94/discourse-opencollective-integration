@@ -18,7 +18,7 @@ hooks:
         cd: $home/plugins
         cmd:
           - mkdir -p plugins
-          - git clone https://github.com/sudaraka94/preventing-malicious-linking-plugin
+          - git clone https://github.com/sudaraka94/discourse-opencollective-integration
 ```
 
 and rebuild docker via
